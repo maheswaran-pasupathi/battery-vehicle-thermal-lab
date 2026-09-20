@@ -119,6 +119,12 @@ python projects/04-shared-battery-cabin-cooling/model.py
 jupyter notebook
 ```
 
+## Level 2 — Refrigerant-state model
+
+A CoolProp-based vapor-compression model is now included in [REFRIGERATION_DIAGNOSTICS.md](REFRIGERATION_DIAGNOSTICS.md). It calculates high-/low-side pressures, superheat, subcooling, pressure ratio, mass flow, COP, compressor power, condenser rejection and condenser approach.
+
+This is the first layer that can support refrigerant-side diagnostic reasoning rather than only load allocation.
+
 ## What this model can diagnose
 
 At this fidelity it can distinguish:
@@ -133,14 +139,10 @@ At this fidelity it can distinguish:
 
 It **cannot** yet diagnose whether a real vehicle problem is caused by:
 
-- refrigerant charge,
-- compressor-map limitation,
-- high-side pressure,
-- low-side pressure,
-- superheat,
-- subcooling,
-- condenser air-side degradation,
-- expansion-device behavior,
+- exact refrigerant charge quantity,
+- real compressor-map limitation,
+- condenser air-side degradation without measured air-side data,
+- detailed expansion-device behavior,
 - local battery coolant maldistribution,
 - local TIM/contact resistance.
 
@@ -150,12 +152,11 @@ Those require the next model layer or measurements.
 
 Project 04 should grow in this order:
 
-1. replace illustrative COP/capacity trends with compressor-map data;
-2. add condensing and evaporating temperatures;
-3. add high-/low-side saturation state reasoning;
-4. add superheat and subcooling;
-5. add condenser approach temperature;
-6. calculate cabin sensible + latent load;
+1. replace fixed compressor efficiency with compressor-map data;
+2. connect the property-based refrigeration model to shared cabin/battery allocation;
+3. add compressor speed and operating-envelope logic;
+4. add refrigerant-side fault scenarios;
+5. calculate cabin sensible + latent load;
 7. calculate battery heat from current, resistance and temperature;
 8. add transient coolant/battery thermal mass;
 9. add battery/cabin control allocation;
@@ -180,7 +181,7 @@ For the refrigeration side, delivered cooling and operating state must eventuall
 - educational reduced-order model;
 - illustrative data;
 - simple ambient trends, not compressor maps;
-- no refrigerant-property package;
+- CoolProp property model added; compressor map still simplified;
 - no humidity/latent cabin model yet;
 - no battery thermal capacitance in the current control calculation;
 - no product-specific validation.
