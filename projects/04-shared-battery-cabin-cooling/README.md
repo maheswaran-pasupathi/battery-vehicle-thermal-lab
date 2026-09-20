@@ -103,6 +103,20 @@ A synthetic 60-minute scenario is included:
 
 This makes the allocation problem visible over time rather than at one operating point.
 
+## 04A → 04G implementation status
+
+All stages through 04G are now implemented. See [STAGES_04A_TO_04G.md](STAGES_04A_TO_04G.md) for the engineering rationale and trust boundary.
+
+| Stage | Added fidelity | Main file |
+|---|---|---|
+| 04A | Shared load ↔ refrigerant-cycle integration | `shared_cycle.py` |
+| 04B | Compressor speed/pressure-ratio map + envelope | `compressor_map.py` |
+| 04C | Condenser, cabin evaporator and battery chiller | `heat_exchangers.py` |
+| 04D | Cabin physics + battery I²R/reversible heat | `loads.py` |
+| 04E | Transient plant + supervisory controls | `plant.py`, `controls.py` |
+| 04F | Fault scenarios and diagnostic signatures | `fault_cases.py` |
+| 04G | Verification/calibration/published benchmark | `validation.py` |
+
 ## Files
 
 - [notebook.ipynb](notebook.ipynb) — worked study with plots and engineering interpretation
