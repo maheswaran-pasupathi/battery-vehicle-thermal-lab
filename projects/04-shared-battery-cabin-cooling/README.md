@@ -1,82 +1,188 @@
 # 04 Shared battery + cabin cooling capacity
 
-A small first-principles model for a hot-ambient EV case where the **cabin evaporator** and **battery chiller** share the same refrigeration system.
+A compact reduced-order study of an EV thermal-management problem: the **cabin evaporator** and **battery chiller** share finite refrigeration capacity, especially during hot-ambient stationary fast charging.
 
-The objective is not to reproduce a specific vehicle. It is to answer four practical questions:
+This is deliberately a small public engineering model. It starts from conservation of energy before adding compressor maps, refrigerant properties or a full 1D plant.
 
-1. What is the combined cooling load?
-2. What compressor electrical power is required for a given COP?
+All numbers are illustrative and generic. No employer or product data is used.
+
+## Engineering questions
+
+1. How much combined cooling is requested by cabin and battery?
+2. How much compressor electrical power does that imply?
 3. How much heat must the condenser reject?
-4. If refrigeration capacity is limited, how much cooling can be allocated to the battery and cabin?
+4. What changes as ambient temperature rises?
+5. What happens when demand exceeds available refrigeration capacity?
+6. How does battery-priority allocation affect cabin comfort?
+7. Which missing physics should be added at the next fidelity level?
 
-All inputs are illustrative and generic.
+## Level 0 — base energy balance
 
-## Base case
+Illustrative base case:
 
-- Ambient: 45 °C
-- Cabin cooling demand: 20 kW
-- Battery chiller demand: 8 kW
-- Cooling COP: 2.5
-- Available refrigeration capacity: 25 kW
+- ambient = 45 °C
+- cabin demand = 20 kW
+- battery chiller demand = 8 kW
+- COP = 2.5
+- available refrigeration capacity = 25 kW
 
-For the unconstrained demand:
-
-- Total cooling demand = 28 kW
-- Compressor electrical power = 11.2 kW
-- Condenser heat rejection = 39.2 kW
-
-Because only 25 kW of cooling capacity is available in this illustrative case, the model demonstrates a simple battery-priority allocation strategy.
-
-## Engineering logic
-
-```text
-Cabin load ----                > shared refrigeration system -> compressor -> condenser -> ambient
-Battery chiller/
-```
-
-Core equations:
+Demand:
 
 ```text
 Q_total = Q_cabin + Q_battery
-COP = Q_total / W_compressor
-Q_condenser = Q_total + W_compressor
+        = 20 + 8
+        = 28 kW
 ```
 
-This project deliberately separates:
+Compressor power:
 
-- **cooling load** from **compressor electrical power**,
-- **total capacity** from **load allocation**,
-- **refrigeration limitation** from **local battery flow/distribution problems**.
+```text
+COP = Q_cooling / W_compressor
+
+W_compressor = 28 / 2.5
+             = 11.2 kW
+```
+
+Condenser rejection:
+
+```text
+Q_condenser = Q_cooling + W_compressor
+            = 28 + 11.2
+            = 39.2 kW
+```
+
+So **compressor electrical power is not the cooling load**, and condenser rejection is larger than the useful cooling load.
+
+## Level 1 — finite capacity and load allocation
+
+The base case requests 28 kW while only 25 kW is available.
+
+With a simple battery-priority strategy:
+
+- battery receives its requested 8 kW,
+- cabin receives 17 kW,
+- cabin has 3 kW unmet demand.
+
+Three simple strategies are implemented:
+
+- `battery_priority`
+- `cabin_priority`
+- `proportional`
+
+These are control-policy examples, not a production controller.
+
+## Level 1 — ambient sensitivity
+
+The model includes **illustrative**, deliberately simple ambient-dependent COP and available-capacity functions.
+
+They are not refrigerant-property calculations or compressor maps.
+
+The purpose is to reproduce the correct engineering tendency:
+
+```text
+ambient temperature rises
+        ↓
+condenser heat rejection becomes harder
+        ↓
+COP and/or available cooling capacity can fall
+        ↓
+shared cabin + battery margin shrinks
+```
+
+The notebook sweeps ambient temperature and shows when the combined demand crosses the available-capacity envelope.
+
+## Level 2 preview — transient stationary fast charge
+
+A synthetic 60-minute scenario is included:
+
+- stationary vehicle,
+- hot ambient,
+- initially high cabin pull-down load,
+- high battery thermal demand during fast charge,
+- finite shared cooling capacity.
+
+This makes the allocation problem visible over time rather than at one operating point.
+
+## Files
+
+- [notebook.ipynb](notebook.ipynb) — worked study with plots and engineering interpretation
+- [model.py](model.py) — reusable model functions
+- [test_model.py](test_model.py) — basic physics/logic checks
 
 ## Run
 
+From the repository root:
+
 ```bash
-python model.py
+pip install -r requirements.txt
+python projects/04-shared-battery-cabin-cooling/model.py
+jupyter notebook
 ```
 
-The script prints the base-case energy balance and a battery-priority capacity allocation.
+## What this model can diagnose
 
-## Next fidelity steps
+At this fidelity it can distinguish:
 
-Later versions can add:
+- requested cooling load,
+- available refrigeration capacity,
+- compressor electrical power,
+- condenser heat rejection,
+- cabin/battery allocation,
+- unmet load,
+- sensitivity to hot ambient.
 
-- COP as a function of ambient and evaporating temperature,
-- compressor map / operating envelope,
-- condenser approach temperature,
-- refrigerant high- and low-side states,
-- cabin sensible + latent load,
-- battery heat generation from current and resistance,
-- transient fast-charge thermal load,
-- control logic for battery/cabin priority,
-- coupling to the existing pack-temperature project.
+It **cannot** yet diagnose whether a real vehicle problem is caused by:
 
-## Limits
+- refrigerant charge,
+- compressor-map limitation,
+- high-side pressure,
+- low-side pressure,
+- superheat,
+- subcooling,
+- condenser air-side degradation,
+- expansion-device behavior,
+- local battery coolant maldistribution,
+- local TIM/contact resistance.
 
-This is a Level-0/Level-1 educational model:
-- fixed COP,
-- no refrigerant property model,
-- no compressor map,
-- no transient thermal capacitance,
-- no product-specific data.
+Those require the next model layer or measurements.
 
-Its purpose is to establish the energy balance and system-level reasoning before adding refrigerant-cycle fidelity.
+## Next fidelity layer
+
+Project 04 should grow in this order:
+
+1. replace illustrative COP/capacity trends with compressor-map data;
+2. add condensing and evaporating temperatures;
+3. add high-/low-side saturation state reasoning;
+4. add superheat and subcooling;
+5. add condenser approach temperature;
+6. calculate cabin sensible + latent load;
+7. calculate battery heat from current, resistance and temperature;
+8. add transient coolant/battery thermal mass;
+9. add battery/cabin control allocation;
+10. correlate against a published refrigeration/HVAC dataset.
+
+## Interview connection
+
+This project supports one important diagnostic rule:
+
+> **High compressor speed or high compressor power does not prove the refrigeration system is performing correctly.**
+
+The engineering check is:
+
+```text
+Load -> Sink -> Flow -> Capacity -> Distribution -> Control -> Fault/degradation
+```
+
+For the refrigeration side, delivered cooling and operating state must eventually be checked using pressure, temperature, compressor-envelope and heat-exchanger evidence.
+
+## Limitations
+
+- educational reduced-order model;
+- illustrative data;
+- simple ambient trends, not compressor maps;
+- no refrigerant-property package;
+- no humidity/latent cabin model yet;
+- no battery thermal capacitance in the current control calculation;
+- no product-specific validation.
+
+The purpose is to build the system reasoning cleanly before increasing fidelity.
