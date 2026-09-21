@@ -10,10 +10,10 @@ Main results (60 kWh usable, 2.2 t vehicle, cabin held at 22 °C):
 
 | Speed | Ambient | Resistive (km) | Heat pump (km) | Heat pump + waste heat (km) |
 |---|---|---|---|---|
-| 50 km/h | 0 °C | 353 | 451 | 457 |
-| 80 km/h | 0 °C | 309 | 351 | 356 |
-| 110 km/h | 0 °C | 236 | 253 | 256 |
-| 50 km/h | -20 °C | 244 | 244 | 249 |
+| 50 km/h | 0 °C | 353 | 451 | 458 |
+| 80 km/h | 0 °C | 309 | 351 | 357 |
+| 110 km/h | 0 °C | 236 | 253 | 257 |
+| 50 km/h | -20 °C | 244 | 244 | 250 |
 
 At city speed the heat pump gives back about 100 km at 0 °C; at highway speed only about 17 km, because the road load dominates. Below the -15 °C cut-out the gain is gone and only the waste-heat share is left. Varying the heat pump quality and the cabin conductance by 25% moves the gain at 0 °C and 60 km/h between about 60 and 86 km, so those two values need test data.
 
