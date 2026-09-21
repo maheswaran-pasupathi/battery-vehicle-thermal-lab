@@ -12,7 +12,9 @@ All numbers are illustrative and generic. No employer data is used anywhere.
 |---|---|---|---|
 | 01 | [Battery heat and coolant sizing](projects/01-battery-heat-and-coolant-sizing) | How much heat does a pack make and how much coolant flow does it need? | A 53 kWh pack makes about 3.7 kW at 2C and needs roughly 21 L/min for a 3 K rise; with no cooling it reaches 47 °C in 30 minutes |
 | 02 | [Coolant flow distribution](projects/02-cooling-plate-flow-distribution) | How does flow split across parallel cooling plates and what does the header layout do? | A U-type header gives a 5.3% flow spread, a Z-type 1.5%; orifices remove the spread at a small cost in total flow |
-| 03 | [Pack temperature and cooling strategy](projects/03-pack-temperature-cooling-strategy) | Radiator or chiller over a hot-day route, and what does it cost? | At 38 °C ambient the radiator peaks at 45.7 °C; a chiller held 40 °C for 0.61 kWh (1.1% of the pack) |\n| 04 | [Shared battery + cabin cooling](projects/04-shared-battery-cabin-cooling) | How do cabin and battery loads share finite refrigeration capacity? | Implemented through 04G: refrigerant states, compressor map, heat exchangers, physical loads, controls, faults and literature benchmark |
+| 03 | [Pack temperature and cooling strategy](projects/03-pack-temperature-cooling-strategy) | Radiator or chiller over a hot-day route, and what does it cost? | At 38 °C ambient the radiator peaks at 45.7 °C; a chiller held 40 °C for 0.61 kWh (1.1% of the pack) |
+| 04 | [Shared battery + cabin cooling](projects/04-shared-battery-cabin-cooling) | How do cabin and battery loads share finite refrigeration capacity? | Implemented through 04G: refrigerant states, compressor map, heat exchangers, physical loads, controls, faults and literature benchmark |
+| 05 | [Cold-weather range](projects/05-heat-pump-vs-resistive-cold-range) | How much range does a heat pump give back over a resistive heater in winter? | At 0 °C the heat pump returns about 100 km at 50 km/h but only about 17 km at 110 km/h |
 
 ## Running them
 
@@ -25,8 +27,8 @@ The notebooks are saved with their outputs, so they can be read on GitHub withou
 
 ## What is next
 
-- Cabin pull-down and HVAC energy\n- Add compressor maps and refrigerant-state diagnostics (superheat, subcooling, condenser approach) to Project 04
-- Heat pump against resistive heating in cold weather, and the effect on range
+- Cabin pull-down and HVAC energy
+- Add compressor maps and refrigerant-state diagnostics (superheat, subcooling, condenser approach) to Project 04
 - Auxiliary energy and its share of vehicle range
 - Passing values from a 3D result to a 1D model, with an energy check
 - Fast-charge thermal limits and pre-conditioning
